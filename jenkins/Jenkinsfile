@@ -1,20 +1,30 @@
-node {
-    triggers {
-        pollSCM('*/2 * * * *')
+pipeline {
+    agent {
+        docker {
+            image 'maven:3.9.0'
+            args '-v /root/.m2:/root/.m2'
+        }
     }
-    withDockerContainer(args: '-v /root/.m2:/root/.m2', image: 'maven:3.9.0') {
+    stages {
         stage('Build') {
-            checkout scm
-            sh 'mvn -B -DskipTests clean package'
+            steps {
+                sh 'mvn -B -DskipTests clean package'
+            }
         }
         stage('Test') {
-            checkout scm
-            sh 'mvn test'
-            junit 'target/surefire-reports/*.xml'
+            steps {
+                sh 'mvn test'
+            }
+            post {
+                always {
+                    junit 'target/surefire-reports/*.xml'
+                }
+            }
         }
         stage('Deliver') {
-            checkout scm
-            sh './jenkins/scripts/deliver.sh'
+            steps {
+                sh './jenkins/scripts/deliver.sh'
+            }
         }
     }
 }
