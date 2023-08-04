@@ -6,5 +6,14 @@ node {
             sh 'mvn -B -DskipTests clean package'
             echo 'Build Successfull'
         }
+
+        stage('Test') {
+            try {
+                sh 'mvn test'
+                echo 'Test Successfull'
+            } catch (e) {
+                currentBuild.result = 'FAILURE'
+            }
+        }
     }
 }
