@@ -15,5 +15,12 @@ node {
                 currentBuild.result = 'FAILURE'
             }
         }
+
+        stage('Post') {
+            if (currentBuild.result == null || currentBuild.result == 'SUCCESS') {
+                echo 'Post Successfull'
+                junit 'target/surefire-reports/*.xml'
+            }
+        }
     }
 }
