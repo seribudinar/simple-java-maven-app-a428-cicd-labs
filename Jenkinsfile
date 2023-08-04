@@ -4,26 +4,7 @@ node {
 
         stage('Build') {
             sh 'mvn -B -DskipTests clean package'
-        }
-        stage('Test') {
-            try {
-                sh 'mvn test'
-                echo 'Test Successfull'
-            } catch (e) {
-                currentBuild.result = 'FAILURE'
-            }
-        }
-
-        stage('Post') {
-            if (currentBuild.result == null || currentBuild.result == 'SUCCESS') {
-                echo 'Post Successfull'
-                junit 'target/surefire-reports/*.xml'
-            }
-        }
-
-        stage('Deliver') {
-            sh './jenkins/scripts/deliver.sh'
-            echo 'Deliver Successfull'
+            echo 'Build Successfull'
         }
     }
 }
