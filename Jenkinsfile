@@ -25,7 +25,7 @@ node {
 
         stage('Deliver') {
             sh './jenkins/scripts/deliver.sh'
-            echo 'Deliver Successfull'
+            echo 'Deliver Successfull, End'
         }
     }
 }
