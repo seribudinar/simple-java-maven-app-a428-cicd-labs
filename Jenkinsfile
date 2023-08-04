@@ -8,6 +8,7 @@ node {
         stage('Test') {
             try {
                 sh 'mvn test'
+                echo 'test'
             } catch (e) {
                 currentBuild.result = 'FAILURE'
             }
