@@ -9,6 +9,7 @@ node {
             DOCKERHUB_CREDENTIALS = credentials('docker-hub-cred')
             REMOTE_SERVER = '18.141.186.62'
             REMOTE_USER = 'ubuntu'
+            dockerImage = ''
         }
 
         checkout scm
@@ -36,7 +37,10 @@ node {
         }
 
         stage('Build Docker Image') {
-            sh 'docker build -t simple-java-maven:latest .'
+            dockerImage = docker.build 'simple-java-maven:latest'
+            docker.withRegistry( '', DOCKERHUB_CREDENTIALS) {
+                dockerImage.push()
+            }
             sh 'docker tag simple-java-maven seribudinar/simple-java-maven:latest'
         }
 
