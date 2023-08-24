@@ -1,9 +1,8 @@
 node {
     withDockerContainer(args: '-v /root/.m2:/root/.m2', image: 'maven:3.9.3-eclipse-temurin-17-alpine') {
-        stage('Initialize') {
-            dockerHome = tool 'myDocker'
-            env.PATH = "${dockerHome}/bin:${env.PATH}"
-        }
+        // stage('Initialize') {
+        //     docker = "/usr/local/bin/docker"
+        // }
 
         environment {
             DOCKERHUB_CREDENTIALS = credentials('docker-hub-cred')
@@ -37,24 +36,24 @@ node {
         }
 
         stage('Build Docker Image') {
-            dockerImage = docker.build 'simple-java-maven:latest'
+            dockerImage = sh '/usr/local/bin/docker build -t simple-java-maven:latest .'
             docker.withRegistry( '', DOCKERHUB_CREDENTIALS) {
                 dockerImage.push()
             }
-            sh 'docker tag simple-java-maven seribudinar/simple-java-maven:latest'
+            sh '/usr/local/bin/docker tag simple-java-maven seribudinar/simple-java-maven:latest'
         }
 
         // Login to DockerHub before pushing the docker Image
         stage('Login to DockerHub') {
             steps {
-                sh 'echo $DOCKERHUB_CREDENTIALS_PSW | docker login -u $DOCKERHUB_CREDENTIALS_USR --password-stdin'
+                sh 'echo $DOCKERHUB_CREDENTIALS_PSW | /usr/local/bin/docker login -u $DOCKERHUB_CREDENTIALS_USR --password-stdin'
             }
         }
 
         // Push image to DockerHub registry
         stage('Push Image to Dockerhub') {
-                sh 'docker push seribudinar/simple-java-maven:latest'
-                    sh 'docker logout'
+                sh '/usr/local/bin/docker push seribudinar/simple-java-maven:latest'
+                    sh '/usr/local/bin/docker logout'
         }
 
         stage('Deliver') {
