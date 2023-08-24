@@ -1,5 +1,11 @@
 node {
     withDockerContainer(args: '-v /root/.m2:/root/.m2', image: 'maven:3.9.3-eclipse-temurin-17-alpine') {
+        environment {
+            DOCKERHUB_CREDENTIALS = credentials('docker-hub-cred')
+            REMOTE_SERVER = '18.141.186.62'
+            REMOTE_USER = 'ubuntu'
+        }
+
         checkout scm
 
         stage('Build') {
