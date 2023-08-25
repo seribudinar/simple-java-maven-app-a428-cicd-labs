@@ -64,7 +64,6 @@ node {
         }
 
         stage('Deploy') {
-            withCre
             sh 'chmod u+r+x ./jenkins/scripts/build.sh'
             withCredentials(['ec2-cred']) {
                 sh 'scp -o StrictHostKeyChecking=no target/*.jar ubuntu@18.141.186.62:/home/ubuntu'
