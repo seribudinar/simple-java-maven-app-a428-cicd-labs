@@ -65,14 +65,12 @@ node {
         }
 
         stage('Deploy') {
-            script {
                 sshagent(credentials: ['ec2-cred']) {
                     sh "scp target/${NAME}-${VERSION}.jar ${REMOTE_USER}@${REMOTE_SERVER}:/home/ubuntu"
                 // sh "ssh -o StrictHostKeyChecking=no ${REMOTE_USER}@${REMOTE_SERVER} 'docker stop simple-java-maven || true && docker rm simple-java-maven || true'"
                 // sh "ssh -o StrictHostKeyChecking=no ${REMOTE_USER}@${REMOTE_SERVER} 'docker pull seribudinar/simple-java-maven'"
                 // sh "ssh -o StrictHostKeyChecking=no ${REMOTE_USER}@${REMOTE_SERVER} 'docker run --name simple-java-maven -d -p 8081:8081 seribudinar/simple-java-maven'"
                 }
-            }
             sleep 60
         }
     }
