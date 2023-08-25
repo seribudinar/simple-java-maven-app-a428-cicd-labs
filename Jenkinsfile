@@ -1,9 +1,9 @@
 node {
-    environment {
-        DOCKERHUB_CREDENTIALS = credentials('docker-hub-cred')
-        REMOTE_SERVER = '18.141.186.62'
-        REMOTE_USER = 'ubuntu'
-        dockerImage = ''
+    withEnv([
+        'DOCKERHUB_CREDENTIALS = credentials("docker-hub-cred")',
+        'REMOTE_SERVER = "18.141.186.62"',
+        'REMOTE_USER = "ubuntu"',
+        'dockerImage = ""']) {
     }
 
     withDockerContainer(args: '-v /root/.m2:/root/.m2', image: 'maven:3.9.3-eclipse-temurin-17-alpine') {
@@ -46,22 +46,20 @@ node {
 
     // Login to DockerHub before pushing the docker Image
     stage('Login to DockerHub') {
-        steps {
-            sh 'echo $DOCKERHUB_CREDENTIALS_PSW | docker login -u $DOCKERHUB_CREDENTIALS_USR --password-stdin'
-        }
+        sh 'echo $DOCKERHUB_CREDENTIALS_PSW | docker login -u $DOCKERHUB_CREDENTIALS_USR --password-stdin'
     }
 
     // Push image to DockerHub registry
     stage('Push Image to Dockerhub') {
-            sh 'docker push seribudinar/simple-java-maven:latest'
-                sh 'docker logout'
+        sh 'docker push seribudinar/simple-java-maven:latest'
+        sh 'docker logout'
     }
 
     stage('Deploy') {
-        sshagent(credentials: ['ec2-cred']) {
-            sh "ssh -o StrictHostKeyChecking=no ${REMOTE_USER}@${REMOTE_SERVER} 'docker stop javaApp || true && docker rm javaApp || true'"
-            sh "ssh -o StrictHostKeyChecking=no ${REMOTE_USER}@${REMOTE_SERVER} 'docker pull mdghouse97/java-web-app'"
-            sh "ssh -o StrictHostKeyChecking=no ${REMOTE_USER}@${REMOTE_SERVER} 'docker run --name javaApp -d -p 8081:8081 mdghouse97/java-web-app'"
+        sshagent(['ec2-cred']) {
+            sh "ssh -o StrictHostKeyChecking=no ${REMOTE_USER}@${REMOTE_SERVER} 'docker stop simple-java-maven || true && docker rm simple-java-maven || true'"
+            sh "ssh -o StrictHostKeyChecking=no ${REMOTE_USER}@${REMOTE_SERVER} 'docker pull seribudinar/simple-java-maven'"
+            sh "ssh -o StrictHostKeyChecking=no ${REMOTE_USER}@${REMOTE_SERVER} 'docker run --name simple-java-maven -d -p 8081:8081 seribudinar/simple-java-maven'"
         }
     }
 }
