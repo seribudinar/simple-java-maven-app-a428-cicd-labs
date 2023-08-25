@@ -31,7 +31,6 @@ node {
                 junit 'target/surefire-reports/*.xml'
             }
         }
-    }
 
     // stage('Initialize') {
     //         sh 'cat /etc/os-release'
@@ -39,40 +38,42 @@ node {
     // env.PATH = "${dockerHome}/bin:${env.PATH}"
     // }
 
-    stage('Build Docker Image') {
-        dockerImage = docker.build 'simple-java-maven:latest'
-        docker.withRegistry( '', DOCKERHUB_CREDENTIALS) {
-            dockerImage.push()
-        }
-        sh 'docker tag simple-java-maven seribudinar/simple-java-maven:latest'
-    }
+    // stage('Build Docker Image') {
+    //     dockerImage = docker.build 'simple-java-maven:latest'
+    //     docker.withRegistry( '', DOCKERHUB_CREDENTIALS) {
+    //         dockerImage.push()
+    //     }
+    //     sh 'docker tag simple-java-maven seribudinar/simple-java-maven:latest'
+    // }
 
-    // Login to DockerHub before pushing the docker Image
-    stage('Login to DockerHub') {
-        steps {
-            sh 'echo $DOCKERHUB_CREDENTIALS_PSW | docker login -u $DOCKERHUB_CREDENTIALS_USR --password-stdin'
-        }
-    }
+    // // Login to DockerHub before pushing the docker Image
+    // stage('Login to DockerHub') {
+    //     steps {
+    //         sh 'echo $DOCKERHUB_CREDENTIALS_PSW | docker login -u $DOCKERHUB_CREDENTIALS_USR --password-stdin'
+    //     }
+    // }
 
     // Push image to DockerHub registry
-    stage('Push Image to Dockerhub') {
-            sh 'docker push seribudinar/simple-java-maven:latest'
-                sh 'docker logout'
-    }
+    // stage('Push Image to Dockerhub') {
+    // //         sh 'docker push seribudinar/simple-java-maven:latest'
+    // //             sh 'docker logout'
+    // // }
 
-    stage('Deliver') {
-        sh './jenkins/scripts/deliver.sh'
-        echo 'Deliver Successfull, End'
-    }
-
-    stage('Deploy') {
-        script {
-            sshagent(credentials: ['ec2-cred']) {
-                sh "ssh -o StrictHostKeyChecking=no ${REMOTE_USER}@${REMOTE_SERVER} 'docker stop simple-java-maven || true && docker rm simple-java-maven || true'"
-                sh "ssh -o StrictHostKeyChecking=no ${REMOTE_USER}@${REMOTE_SERVER} 'docker pull seribudinar/simple-java-maven'"
-                sh "ssh -o StrictHostKeyChecking=no ${REMOTE_USER}@${REMOTE_SERVER} 'docker run --name simple-java-maven -d -p 8081:8081 seribudinar/simple-java-maven'"
-            }
+        stage('Deliver') {
+            sh './jenkins/scripts/deliver.sh'
+            echo 'Deliver Successfull, End'
         }
-        sleep 60
+
+        stage('Deploy') {
+            script {
+                sshagent(credentials: ['ec2-cred']) {
+                    sh "scp target/${NAME}-${VERSION}.jar ${REMOTE_USER}@${REMOTE_SERVER}:/home/ubuntu"
+                // sh "ssh -o StrictHostKeyChecking=no ${REMOTE_USER}@${REMOTE_SERVER} 'docker stop simple-java-maven || true && docker rm simple-java-maven || true'"
+                // sh "ssh -o StrictHostKeyChecking=no ${REMOTE_USER}@${REMOTE_SERVER} 'docker pull seribudinar/simple-java-maven'"
+                // sh "ssh -o StrictHostKeyChecking=no ${REMOTE_USER}@${REMOTE_SERVER} 'docker run --name simple-java-maven -d -p 8081:8081 seribudinar/simple-java-maven'"
+                }
+            }
+            sleep 60
+        }
     }
 }
