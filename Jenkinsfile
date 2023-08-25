@@ -31,9 +31,9 @@ node {
 
     withEnv([
         DOCKERHUB_CREDENTIALS = credentials('docker-hub-cred'),
-        REMOTE_SERVER => '18.141.186.62',
-        REMOTE_USER => 'ubuntu',
-        dockerImage => '']) {
+        REMOTE_SERVER = '18.141.186.62',
+        REMOTE_USER = 'ubuntu',
+        dockerImage = '']) {
         // withDockerRegistry(credentialsId: 'docker-hub-cred', toolName: 'myDocker', url: 'https://hub.docker.com/') {
         stage('Build Docker Image') {
             dockerImage = sh 'docker build -t simple-java-maven:latest  .'
