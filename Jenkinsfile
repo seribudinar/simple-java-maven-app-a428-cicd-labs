@@ -29,12 +29,9 @@ node {
         }
     }
 
-    withCredentials([usernamePassword(credentialsId: 'docker-hub-cred', passwordVariable: '', usernameVariable: '')]) {
+    withCredentials([usernamePassword(credentialsId: 'docker-hub-cred', passwordVariable: 'DOCKERHUB_CREDENTIALS_PSW', usernameVariable: 'DOCKERHUB_CREDENTIALS_USR')]) {
         stage('Build Docker Image') {
-            dockerImage = sh 'docker build -t simple-java-maven:latest  .'
-            docker.withRegistry( '', DOCKERHUB_CREDENTIALS) {
-                dockerImage.push()
-            }
+            sh 'docker build -t simple-java-maven:latest  .'
             sh 'docker tag simple-java-maven seribudinar/simple-java-maven:latest'
         }
 
