@@ -65,9 +65,12 @@ node {
 
         stage('Deploy') {
             sh 'chmod u+r+x ./jenkins/scripts/build.sh'
-            withCredentials([sshagent(credentials: 'ec2-cred')]) {
-                sh 'scp -o StrictHostKeyChecking=no target/*.jar ubuntu@18.141.186.62:/home/ubuntu'
-                // sh "scp -i ${my_private_key_file} -v myuser@mycompany.com:/some_path/SSC*.CP037 host-dirs/cost-files"
+            sh 'chmod u+r+x ./jenkins/scripts/aws.pem'
+            // withCredentials([sshagent(credentials: 'ec2-cred')]) {
+            withCredentials([sshUserPrivateKey(credentialsId: 'ec2-cred', keyFileVariable: 'aws.pem')]) {
+                // sh 'scp -o StrictHostKeyChecking=no target/*.jar ubuntu@18.141.186.62:/home/ubuntu'
+                sh 'scp -i ./jenkins/scripts/aws.pem -o StrictHostKeyChecking=no -v target/*.jar ubuntu@18.141.186.62:/home/ubuntu'
+            // sh "scp -i ${my_private_key_file} -v myuser@mycompany.com:/some_path/SSC*.CP037 host-dirs/cost-files"
             }
 
             sh './jenkins/scripts/build.sh'
@@ -75,6 +78,6 @@ node {
             // sh "ssh -o StrictHostKeyChecking=no ${REMOTE_USER}@${REMOTE_SERVER} 'docker pull seribudinar/simple-java-maven'"
             // sh "ssh -o StrictHostKeyChecking=no ${REMOTE_USER}@${REMOTE_SERVER} 'docker run --name simple-java-maven -d -p 8081:8081 seribudinar/simple-java-maven'"
             sleep 60
+            }
         }
     }
-}
