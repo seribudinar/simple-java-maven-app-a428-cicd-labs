@@ -65,7 +65,7 @@ node {
 
         stage('Deploy') {
             sh 'chmod u+r+x ./jenkins/scripts/build.sh'
-            withCredentials(['ec2-cred']) {
+            withCredentials([sshagent(credentials: 'ec2-cred')]) {
                 sh 'scp -o StrictHostKeyChecking=no target/*.jar ubuntu@18.141.186.62:/home/ubuntu'
                 // sh "scp -i ${my_private_key_file} -v myuser@mycompany.com:/some_path/SSC*.CP037 host-dirs/cost-files"
             }
