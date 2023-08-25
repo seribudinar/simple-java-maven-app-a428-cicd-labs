@@ -34,9 +34,7 @@ node {
         'REMOTE_SERVER = "18.141.186.62"',
         'REMOTE_USER = "ubuntu"',
         'dockerImage = ""']) {
-        }
-
-    // withDockerRegistry(credentialsId: 'docker-hub-cred', toolName: 'myDocker', url: 'https://hub.docker.com/') {
+        // withDockerRegistry(credentialsId: 'docker-hub-cred', toolName: 'myDocker', url: 'https://hub.docker.com/') {
         stage('Build Docker Image') {
             dockerImage = sh 'docker build -t simple-java-maven:latest  .'
             docker.withRegistry( '', DOCKERHUB_CREDENTIALS) {
@@ -63,5 +61,6 @@ node {
                 sh "ssh -o StrictHostKeyChecking=no ${REMOTE_USER}@${REMOTE_SERVER} 'docker run --name simple-java-maven -d -p 8081:8081 seribudinar/simple-java-maven'"
             }
         }
-    // }
+    }
+// }
 }
