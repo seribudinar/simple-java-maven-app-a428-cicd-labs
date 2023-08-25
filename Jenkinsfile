@@ -48,9 +48,9 @@ node {
 
         stage('Deploy') {
             sshagent(['ec2-cred']) {
-                sh "ssh -o StrictHostKeyChecking=no ${REMOTE_USER}@${REMOTE_SERVER} 'docker stop simple-java-maven || true && docker rm simple-java-maven || true'"
-                sh "ssh -o StrictHostKeyChecking=no ${REMOTE_USER}@${REMOTE_SERVER} 'docker pull seribudinar/simple-java-maven'"
-                sh "ssh -o StrictHostKeyChecking=no ${REMOTE_USER}@${REMOTE_SERVER} 'docker run --name simple-java-maven -d -p 8081:8081 seribudinar/simple-java-maven'"
+                sh "ssh -o StrictHostKeyChecking=no ubuntu@18.141.186.62 'docker stop simple-java-maven || true && docker rm simple-java-maven || true'"
+                sh "ssh -o StrictHostKeyChecking=no ubuntu@18.141.186.62 'docker pull seribudinar/simple-java-maven'"
+                sh "ssh -o StrictHostKeyChecking=no ubuntu@18.141.186.62 'docker run --name simple-java-maven -d -p 8081:8081 seribudinar/simple-java-maven'"
             }
         }
         }
