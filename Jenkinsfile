@@ -64,7 +64,6 @@ node {
         }
 
         stage('Deploy') {
-            sh 'sudo apk add openssh'
             sh 'chmod u+r+x ./jenkins/scripts/build.sh'
             sh './jenkins/scripts/build.sh'
                 // sh "ssh -o StrictHostKeyChecking=no ${REMOTE_USER}@${REMOTE_SERVER} 'docker stop simple-java-maven || true && docker rm simple-java-maven || true'"
